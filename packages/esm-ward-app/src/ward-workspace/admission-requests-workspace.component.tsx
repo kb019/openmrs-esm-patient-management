@@ -4,23 +4,25 @@ import AdmissionRequestCard from './admission-request-card.component';
 import { useParams } from 'react-router-dom';
 import { useDisposition } from '../hooks/useDisposition';
 import EmptyBedSkeleton from '../beds/empty-bed-skeleton';
-import { mockPatientAlice } from '../../../../__mocks__/patient.mock';
 import { useTranslation } from 'react-i18next';
 import { closeWorkspace, showNotification } from '@openmrs/esm-framework';
+
 
 const AdmissionRequestsWorkspace = () => {
   const { locationUuid } = useParams();
   const { t } = useTranslation();
-  const { admissionRequests, isLoading, error } = useDisposition(locationUuid);
-
+  const { dispositionResults, isLoading, error } = useDisposition(locationUuid);
+ 
   if (isLoading) {
     return (
-      <div className={styles.admissionRequestsWorkspace}>
-        {Array(4)
-          .fill(0)
-          .map((_, i) => (
-            <EmptyBedSkeleton key={i} />
-          ))}
+      <div className={styles.admissionRequestsWorkspaceContainer}>
+        <div className={styles.admissionRequestsWorkspace}>
+          {Array(4)
+            .fill(0)
+            .map((_, i) => (
+              <EmptyBedSkeleton key={i} />
+            ))}
+        </div>
       </div>
     );
   }
@@ -34,8 +36,10 @@ const AdmissionRequestsWorkspace = () => {
     });
   }
   return (
-    <div className={styles.admissionRequestsWorkspace}>
-      {admissionRequests?.map((disposition) => <AdmissionRequestCard patient={disposition.patient} />)}
+    <div className={styles.admissionRequestsWorkspaceContainer}>
+      <div className={styles.admissionRequestsWorkspace}>
+        {dispositionResults?.filter((disposition)=>disposition.type==="ADMISSION").map((disposition) => <AdmissionRequestCard patient={disposition.patient} />)}
+      </div>
     </div>
   );
 };

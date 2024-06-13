@@ -1,7 +1,13 @@
 import { renderWithSwr } from '../../../../tools/test-utils';
 import React from 'react';
 import AdmissionRequestsWorkspace from './admission-requests-workspace.component';
-import { ConfigSchema, Person, closeWorkspace, getDefaultsFromConfigSchema, useConfig } from '@openmrs/esm-framework';
+import {
+  type ConfigSchema,
+  type Person,
+  closeWorkspace,
+  getDefaultsFromConfigSchema,
+  useConfig,
+} from '@openmrs/esm-framework';
 import { configSchema } from '../config-schema';
 import { useDisposition } from '../hooks/useDisposition';
 import { mockAdmissionRequest } from '../../../../__mocks__/admissionRequest.mock';
@@ -24,7 +30,7 @@ const mockAdmissionRequestResponse = {
   mutate: jest.fn(),
   isValidating: false,
   isLoading: false,
-  admissionRequests: [mockAdmissionRequest],
+  dispositionResults: [mockAdmissionRequest],
 };
 jest.mocked(useDisposition).mockReturnValue(mockAdmissionRequestResponse);
 
@@ -38,7 +44,7 @@ jest.mock('@openmrs/esm-framework', () => {
 describe('Admission Requests Workspace', () => {
   it('should render a admission request card', () => {
     const { getByText } = renderWithSwr(<AdmissionRequestsWorkspace />);
-    const { givenName, familyName } = mockAdmissionRequest.patient.person.preferredName;
+    const { givenName, familyName } = mockAdmissionRequest.patient.person!.preferredName!;
     expect(getByText(givenName + ' ' + familyName)).toBeInTheDocument();
   });
 

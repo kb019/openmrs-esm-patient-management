@@ -7,7 +7,7 @@ export function useDisposition(locationUuid: string) {
   const { data, ...rest } = useSWR<{ data: Array<Disposition> }, Error>(apiUrl, openmrsFetch);
 
   return {
-    admissionRequests: data?.data || null,
+    dispositionResults: data?.data || null,
     ...rest,
   };
 }

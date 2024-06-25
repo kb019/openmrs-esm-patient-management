@@ -9,6 +9,8 @@
   display: flex;
   align-items: center;
   padding: spacing.$spacing-02;
+  flex-shrink: 0;
+  margin-left: spacing.$spacing-05;
 }
 
 .movementIcon {

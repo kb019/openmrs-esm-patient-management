@@ -7,5 +7,6 @@
   "noBedsConfigured": "No beds configured for this location",
   "unknownLocationUuid": "Unknown location uuid: {{locationUuidFromUrl}}",
   "admissionRequests":"Admission Requests",
-  "errorLoadingPatientAdmissionRequests":"Error Loading Patient Admission Requests"
+  "errorLoadingPatientAdmissionRequests":"Error Loading Patient Admission Requests",
+  "errorLoadingBedDetails":"Error Loading Bed Details"
 }

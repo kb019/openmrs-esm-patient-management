@@ -1,6 +1,6 @@
 import React from 'react';
 import { Movement } from '@carbon/react/icons';
-import styles from './admission-requests.scss';
+import styles from './admission-requests-bar.scss';
 import { launchWorkspace, showNotification } from '@openmrs/esm-framework';
 import { useInpatientRequest } from '../hooks/useInpatientRequest';
 import { useParams } from 'react-router-dom';

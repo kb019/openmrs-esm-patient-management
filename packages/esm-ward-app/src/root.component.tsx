@@ -1,3 +1,4 @@
+import { WorkspaceContainer } from '@openmrs/esm-framework';
 import React from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import WardView from './ward-view/ward-view.component';

@@ -1,12 +1,12 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, ModalBody, ModalFooter, ModalHeader } from '@carbon/react';
 import { parseDate, showSnackbar, useVisit } from '@openmrs/esm-framework';
 import { type MappedQueueEntry } from '../types';
 import { startOfDay } from '../constants';
 import { useCheckedInAppointments, endQueueEntry } from './remove-queue-entry.resource';
-import styles from './remove-queue-entry.scss';
 import { useMutateQueueEntries } from '../hooks/useQueueEntries';
+import styles from './remove-queue-entry.scss';
 
 interface RemoveQueueEntryDialogProps {
   queueEntry: MappedQueueEntry;
@@ -20,7 +20,7 @@ const RemoveQueueEntryDialog: React.FC<RemoveQueueEntryDialogProps> = ({ queueEn
 
   const { data: appointments } = useCheckedInAppointments(queueEntry.patientUuid, startOfDay);
 
-  const removeQueueEntry = () => {
+  const removeQueueEntry = useCallback(() => {
     const endCurrentVisitPayload = {
       location: currentVisit?.location?.uuid,
       startDatetime: parseDate(currentVisit?.startDatetime),
@@ -37,29 +37,42 @@ const RemoveQueueEntryDialog: React.FC<RemoveQueueEntryDialogProps> = ({ queueEn
       endCurrentVisitPayload,
       queueEntry.visitUuid,
       appointments,
-    ).then((response) => {
-      closeModal();
-      mutateQueueEntries();
-      showSnackbar({
-        isLowContrast: true,
-        kind: 'success',
-        subtitle: t('queueEntryRemovedSuccessfully', `Queue entry removed successfully`),
-        title: t('queueEntryRemoved', 'Queue entry removed'),
-      });
-      (error) => {
+    )
+      .then(() => {
+        closeModal();
+        mutateQueueEntries();
+        showSnackbar({
+          isLowContrast: true,
+          kind: 'success',
+          subtitle: t('queueEntryRemovedSuccessfully', `Queue entry removed successfully`),
+          title: t('queueEntryRemoved', 'Queue entry removed'),
+        });
+      })
+      .catch((error) => {
         showSnackbar({
           title: t('removeQueueEntryError', 'Error removing queue entry'),
           kind: 'error',
           isLowContrast: false,
           subtitle: error?.message,
         });
-      };
-    });
-  };
+      });
+  }, [
+    appointments,
+    closeModal,
+    currentVisit?.location?.uuid,
+    currentVisit?.startDatetime,
+    currentVisit?.visitType?.uuid,
+    mutateQueueEntries,
+    queueEntry?.queue?.uuid,
+    queueEntry?.queueEntryUuid,
+    queueEntry?.visitUuid,
+    t,
+  ]);
 
   return (
-    <div>
+    <>
       <ModalHeader
+        className={styles.modalHeader}
         closeModal={closeModal}
         label={t('serviceQueue', 'Service queue')}
         title={t('removeFromQueueAndEndVisit', 'Remove patient from queue and end active visit?')}
@@ -80,7 +93,7 @@ const RemoveQueueEntryDialog: React.FC<RemoveQueueEntryDialogProps> = ({ queueEn
           {t('endVisit', 'End visit')}
         </Button>
       </ModalFooter>
-    </div>
+    </>
   );
 };
 

@@ -1,61 +1,44 @@
-import React from 'react';
-import styles from './admission-requests-workspace.scss';
-import AdmissionRequestCard from '../admission-request-card/admission-request-card.component';
-import { Search } from '@carbon/react';
-import { ErrorState } from '@openmrs/esm-framework';
+import { InlineNotification } from '@carbon/react';
+import { useAppContext, type DefaultWorkspaceProps } from '@openmrs/esm-framework';
+import React, { createContext, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useInpatientRequest } from '../../hooks/useInpatientRequest';
-import { type InpatientRequest } from '../../types';
+import useEmrConfiguration from '../../hooks/useEmrConfiguration';
+import styles from './admission-requests-workspace.scss';
+import { type WardViewContext } from '../../types';
 
-interface AdmissionRequestsWorkspaceProps {}
-const AdmissionRequestsWorkspace: React.FC<AdmissionRequestsWorkspaceProps> = () => {
-  // note: useAppContext() does not work here for some reason, so we call `useInpatientRequest`
-  // directly. See: https://openmrs.atlassian.net/browse/O3-4020
-  const {
-    inpatientRequests,
-    isLoading: isLoadingInpatientRequests,
-    error: errorFetchingInpatientRequests,
-  } = useInpatientRequest(['ADMIT', 'TRANSFER']);
+export interface AdmissionRequestsWorkspaceProps extends DefaultWorkspaceProps {
+  wardPendingPatients: ReactNode;
+}
+
+export const AdmissionRequestsWorkspaceContext = createContext<AdmissionRequestsWorkspaceProps>(null);
+
+const AdmissionRequestsWorkspace: React.FC<AdmissionRequestsWorkspaceProps> = (props) => {
+  const { wardPendingPatients } = props;
   const { t } = useTranslation();
-  const [searchTerm, setSearchTerm] = React.useState('');
-  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(event.target.value);
-  };
+  const { errorFetchingEmrConfiguration } = useEmrConfiguration();
+  const { wardPatientGroupDetails } = useAppContext<WardViewContext>('ward-view-context') ?? {};
+  const { inpatientRequests, isLoading, error } = wardPatientGroupDetails?.inpatientRequestResponse ?? {};
 
   return (
     <div className={styles.admissionRequestsWorkspaceContainer}>
-      <Search
-        labelText=""
-        value={searchTerm}
-        onChange={handleSearch}
-        size="lg"
-        placeholder={t('searchForPatient', 'Search for a patient')}
-        disabled
-      />
-
-      <div className={styles.content}>
-        {isLoadingInpatientRequests ? (
-          <>Loading</>
-        ) : errorFetchingInpatientRequests ? (
-          <ErrorState
-            headerTitle={t('admissionRequests', 'Admission requests')}
-            error={errorFetchingInpatientRequests}
+      {errorFetchingEmrConfiguration && (
+        <div className={styles.formError}>
+          <InlineNotification
+            kind="error"
+            title={t('somePartsOfTheFormDidntLoad', "Some parts of the form didn't load")}
+            subtitle={t(
+              'fetchingEmrConfigurationFailed',
+              'Fetching EMR configuration failed. Try refreshing the page or contact your system administrator.',
+            )}
+            lowContrast
+            hideCloseButton
           />
-        ) : (
-          <>
-            {inpatientRequests.map((request: InpatientRequest, i) => (
-              <AdmissionRequestCard
-                key={`admission-request-card-${i}`}
-                patient={request.patient}
-                visit={request.visit}
-                bed={null}
-                inpatientRequest={request}
-                inpatientAdmission={null}
-              />
-            ))}
-          </>
-        )}
-      </div>
+        </div>
+      )}
+      {inpatientRequests?.length == 0 && <div>{t('noPendingPatientRequests', 'No pending patient requests')}</div>}
+      <AdmissionRequestsWorkspaceContext.Provider value={props}>
+        <div className={styles.content}>{wardPendingPatients}</div>
+      </AdmissionRequestsWorkspaceContext.Provider>
     </div>
   );
 };

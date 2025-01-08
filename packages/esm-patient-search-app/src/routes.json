@@ -28,5 +28,14 @@
       "slot": "patient-search-bar-slot",
       "offline": true
     }
+  ],
+  "workspaces": [
+    {
+      "name": "patient-search-workspace",
+      "component": "patientSearchWorkspace",
+      "title": "searchPatient",
+      "type": "patient-search-workspace",
+      "groups": ["ward-patient-admission-requests"]
+    }
   ]
 }

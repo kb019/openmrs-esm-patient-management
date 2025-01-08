@@ -61,19 +61,24 @@
       "slot": "action-menu-ward-patient-items-slot"
     },
     {
-      "component": "admissionRequestNoteRowExtension",
-      "name": "admission-request-note-card-row",
-      "slot": "ward-patient-card-slot"
+      "name": "admission-requests-workspace-siderail-button",
+      "component": "admissionRequestsWorkspaceSideRailIcon",
+      "slot": "action-menu-ward-patient-admission-requests-items-slot"
     },
     {
-      "component": "motherChildRowExtension",
-      "name": "mother-child-card-row",
-      "slot": "ward-patient-card-slot"
+      "name": "create-admission-request-workspace-siderail-button",
+      "component": "createAdmissionEncounterWorkspaceSideRailIcon",
+      "slot": "action-menu-ward-patient-admission-requests-items-slot"
     },
     {
-      "component": "pendingItemsCardRowExtension",
-      "name": "ward-patient-pending-items-card-row",
-      "slot": "ward-patient-card-pending-items-slot"
+      "component": "defaultWardView",
+      "name": "default-ward",
+      "slot": "default-ward"
+    },
+    {
+      "component": "maternalWardView",
+      "name": "maternal-ward",
+      "slot": "maternal-ward"
     }
   ],
   "workspaces": [
@@ -81,15 +86,24 @@
       "name": "admission-requests-workspace",
       "component": "admissionRequestWorkspace",
       "title": "admissionRequests",
-      "type": "admission-requests"
+      "type": "pending-admission-requests",
+      "width": "wider",
+      "groups": ["ward-patient-admission-requests"]
+    },{
+      "name": "create-admission-encounter-workspace",
+      "component": "createAdmissionEncounterWorkspace",
+      "title": "admitPatient",
+      "type": "patient-search-workspace",
+      "width": "wider",
+      "groups": ["ward-patient-admission-requests"]
     },
     {
       "name": "ward-patient-notes-workspace",
       "component": "wardPatientNotesWorkspace",
       "type": "ward-patient-notes",
       "title": "inpatientNotesWorkspaceTitle",
-      "sidebarFamily": "ward-patient",
-      "hasOwnSidebar": true
+      "groups": ["ward-patient"]
+
     },
     {
       "name": "admit-patient-form-workspace",
@@ -101,18 +115,17 @@
       "name": "ward-patient-workspace",
       "component": "wardPatientWorkspace",
       "type": "ward",
-      "title": "Ward Patient",
+      "title": "Ward patient",
       "width": "extra-wide",
-      "hasOwnSidebar": true,
-      "sidebarFamily": "ward-patient"
+      "groups": ["ward-patient"]
     },
     {
       "name": "patient-transfer-swap-workspace",
       "component": "patientTransferAndSwapWorkspace",
       "title": "transfers",
       "type": "transfer-swap-bed-form",
-      "hasOwnSidebar": true,
-      "sidebarFamily": "ward-patient"
+      "groups": ["ward-patient"]
+
     },
     {
       "name": "patient-transfer-request-workspace",
@@ -125,17 +138,21 @@
       "component": "patientDischargeWorkspace",
       "title": "discharge",
       "type": "ward-patient-discharge",
-      "hasOwnSidebar": true,
-      "sidebarFamily": "ward-patient"
+      "groups": ["ward-patient"]
     },
     {
       "name": "ward-patient-clinical-forms-workspace",
       "component": "patientClinicalFormsWorkspace",
       "title": "clinicalForms",
       "type": "ward-patient-clinical-forms",
-      "hasOwnSidebar": true,
-      "sidebarFamily": "ward-patient",
-      "width": "wider"
+      "width": "wider",
+      "groups": ["ward-patient"]
+    },
+    {
+      "name": "cancel-admission-request-workspace",
+      "component": "cancelAdmissionRequestWorkspace",
+      "title": "cancelAdmissionRequest",
+      "type": "cancel-admission-request"
     }
   ]
 }

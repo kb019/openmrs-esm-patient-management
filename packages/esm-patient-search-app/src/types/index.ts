@@ -1,4 +1,4 @@
-import { type FetchResponse, type OpenmrsResource } from '@openmrs/esm-framework';
+import type { OpenmrsResource } from '@openmrs/esm-framework';
 
 export interface SearchedPatient {
   uuid: string;
@@ -17,7 +17,10 @@ export interface SearchedPatient {
       middleName: string;
     };
   };
-  attributes: Array<{ value: string; attributeType: { uuid: string; display: string } }>;
+  attributes: Array<{
+    value: OpenmrsResource | string;
+    attributeType: { uuid: string; display: string };
+  }>;
 }
 
 export interface Identifier {
@@ -82,21 +85,14 @@ export interface FHIRPatientSearchResponse {
 }
 
 export interface PatientSearchResponse {
-  data?: Array<SearchedPatient>;
-  isLoading: boolean;
-  fetchError: Error;
-  loadingNewData: boolean;
-  hasMore: boolean;
   currentPage: number;
+  data?: Array<SearchedPatient>;
+  fetchError: Error;
+  hasMore: boolean;
+  isLoading: boolean;
+  isValidating: boolean;
+  setPage: (page: number | ((_page: number) => number)) => Promise<unknown[] | undefined>;
   totalResults: number;
-  setPage: (size: number | ((_size: number) => number)) => Promise<
-    FetchResponse<{
-      results: Array<SearchedPatient>;
-      links: Array<{
-        rel: 'prev' | 'next';
-      }>;
-    }>[]
-  >;
 }
 
 export interface AdvancedPatientSearchState {
@@ -104,31 +100,11 @@ export interface AdvancedPatientSearchState {
   dateOfBirth: number;
   monthOfBirth: number;
   yearOfBirth: number;
-  phoneNumber: number;
   postcode: string;
   age: number;
-}
-
-export enum AdvancedPatientSearchActionTypes {
-  SET_GENDER,
-  SET_DATE_OF_BIRTH,
-  SET_MONTH_OF_BIRTH,
-  SET_YEAR_OF_BIRTH,
-  SET_PHONE_NUMBER,
-  SET_POSTCODE,
-  SET_AGE,
-  RESET_FIELDS,
-}
-
-export interface AdvancedPatientSearchAction {
-  type: AdvancedPatientSearchActionTypes;
-  gender?: 'any' | 'male' | 'female' | 'other' | 'unknown';
-  dateOfBirth?: number;
-  monthOfBirth?: number;
-  yearOfBirth?: number;
-  phoneNumber?: number;
-  postcode?: string;
-  age?: number;
+  attributes: {
+    [key: string]: string;
+  };
 }
 
 export interface User {
@@ -136,5 +112,70 @@ export interface User {
   userProperties: {
     [x: string]: string;
     patientsVisited: string;
+    defaultLocation: string;
   };
+}
+
+export interface PersonAttributeTypeResponse {
+  uuid: string;
+  display: string;
+  name?: string;
+  description?: string;
+  format: string;
+}
+
+export interface ConceptResponse {
+  uuid: string;
+  display: string;
+  datatype: {
+    uuid: string;
+    display: string;
+  };
+  answers: Array<OpenmrsResource>;
+  setMembers: Array<OpenmrsResource>;
+}
+
+export interface LocationEntry {
+  resource: {
+    id: string;
+    name: string;
+    resourceType: string;
+    status: 'active' | 'inactive';
+    meta?: {
+      tag?: Array<{
+        code: string;
+        display: string;
+        system: string;
+      }>;
+    };
+  };
+}
+
+export interface LocationResponse {
+  type: string;
+  total: number;
+  resourceType: string;
+  meta: {
+    lastUpdated: string;
+  };
+  link: Array<{
+    relation: string;
+    url: string;
+  }>;
+  id: string;
+  entry: Array<LocationEntry>;
+}
+
+export type SearchFieldType = 'age' | 'dateOfBirth' | 'gender' | 'personAttribute' | 'postcode';
+
+export interface SearchFieldConfig {
+  name: string;
+  type: SearchFieldType;
+  placeholder?: string;
+  answerConceptSetUuid?: string;
+  conceptAnswersUuids?: Array<string>;
+  locationTag?: string;
+  attributeTypeUuid?: string;
+  min?: number;
+  max?: number;
 }

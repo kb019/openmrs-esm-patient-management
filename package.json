@@ -26,13 +26,8 @@
   },
   "devDependencies": {
     "@babel/core": "^7.11.6",
-<<<<<<< HEAD
-    "@carbon/react": "~1.37.0",
-    "@openmrs/esm-framework": "^5.7.3-pre.2185",
-=======
     "@carbon/react": "^1.71.0",
     "@openmrs/esm-framework": "next",
->>>>>>> 6d586acae9437d04c30b193552ac55cbb138028e
     "@openmrs/esm-patient-common-lib": "next",
     "@playwright/test": "1.49.0",
     "@swc/core": "^1.2.165",
